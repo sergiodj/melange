@@ -305,7 +305,9 @@ func processSymlinkSo(ctx context.Context, hdl SCAHandle, path string, generated
 		for _, soname := range sonames {
 			log.Infof("  found soname %s for %s", soname, path)
 
-			generated.Runtime = append(generated.Runtime, fmt.Sprintf("so:%s", soname))
+			if isInDir(path, libDirs) {
+				generated.Runtime = append(generated.Runtime, fmt.Sprintf("so:%s", soname))
+			}
 		}
 	}
 
@@ -397,7 +399,7 @@ func generateSharedObjectNameDeps(ctx context.Context, hdl SCAHandle, generated 
 			if lib == "libcuda.so.1" {
 				continue
 			}
-			if strings.Contains(lib, ".so.") {
+			if strings.Contains(lib, ".so") && isInDir(path, libDirs) {
 				log.Infof("  found lib %s for %s", lib, path)
 				generated.Runtime = append(generated.Runtime, fmt.Sprintf("so:%s", lib))
 			}
